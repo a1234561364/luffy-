@@ -48,15 +48,17 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def _get_pay_url(self, out_trade_no, total_amount, subject):
         # total_amount是Decimal类型,识别不了,需要转换成float类型
-        from luffyapi.libs.al_pay import alipay, gateway
-        order_string = alipay.api_alipay_trade_page_pay(
-            out_trade_no=out_trade_no,
-            total_amount=float(total_amount),
-            subject=subject,
-            return_url=settings.RETURN_URL,  # get同步回调，前台地址
-            notify_url=settings.NOTIFY_URL  # post回调，后台地址
-        )
-        return gateway + order_string
+        total_amount = float(total_amount)
+        if total_amount != 0:
+            from luffyapi.libs.al_pay import alipay, gateway
+            order_string = alipay.api_alipay_trade_page_pay(
+                out_trade_no=out_trade_no,
+                total_amount=total_amount,
+                subject=subject,
+                return_url=settings.RETURN_URL,  # get同步回调，前台地址
+                notify_url=settings.NOTIFY_URL  # post回调，后台地址
+            )
+            return gateway + order_string
 
     def _before_create(self, attrs, user, pay_url, out_trade_no):
         attrs['user'] = user
@@ -82,14 +84,17 @@ class OrderSerializer(serializers.ModelSerializer):
         pay_url = self._get_pay_url(out_trade_no, total_amount, attrs.get('subject'))
         # 5）入库(两个表)的信息准备
         self._before_create(attrs, user, pay_url, out_trade_no)
-
         return attrs
 
     def create(self, validated_data):
         total_amount = float(validated_data['total_amount'])
-        # if total_amount == 0:
         course_list = validated_data.pop('course')
         order = models.Order.objects.create(**validated_data)
+        if total_amount == 0:
+            for course in course_list:
+                models.OrderDetail.objects.create(order=order, course=course, price=course.price,
+                                                  real_price=course.price)
+            return order
         # print(total_amount)
         for course in course_list:
             models.OrderDetail.objects.create(order=order, course=course, price=course.price, real_price=course.price)

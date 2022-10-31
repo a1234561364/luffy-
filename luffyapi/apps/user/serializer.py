@@ -17,22 +17,9 @@ class UserSerializers(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
-    def validate(self, attrs):
-        # 多种登录方式
-        user = self._get_user(attrs)
-        # 签发token
-        token = self._get_token(user)
-        # 放到context中,我在视图类中可以取出
-        # request = self.context['request']
-        # icon = 'http://%s%s%s' % (request.META['HTTP_HOST'], settings.MEDIA_URL, user.icon)
-        # self.context['icon'] = icon
-        # self.context['username'] = user.username
-        self.context['token'] = token
-        self.context['user'] = user
-        return attrs
+
 
     def _get_user(self, attrs):
-        print(attrs)
         username = attrs.get('username')
         password = attrs.get('password')
         if re.match('^1[3-9][0-9]{9}$', username):
@@ -56,6 +43,19 @@ class UserSerializers(serializers.ModelSerializer):
         token = jwt_encode_handler(payload)  # 通过payload获得token
         return token
 
+    def validate(self, attrs):
+        # 多种登录方式
+        user = self._get_user(attrs)
+        # 签发token
+        token = self._get_token(user)
+        # 放到context中,我在视图类中可以取出
+        # request = self.context['request']
+        # icon = 'http://%s%s%s' % (request.META['HTTP_HOST'], settings.MEDIA_URL, user.icon)
+        # self.context['icon'] = icon
+        # self.context['username'] = user.username
+        self.context['token'] = token
+        self.context['user'] = user
+        return attrs
 
 
 

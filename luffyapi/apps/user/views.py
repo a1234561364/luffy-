@@ -17,12 +17,11 @@ class LoginView(ViewSet):
             # ser.context['user'] 是user对象
 
             username = ser.context['user'].username
-
             return APIResponse(token=token, username=username)
         else:
             return APIResponse(code=0, msg=ser.errors)
 
-    @action(detail=False)
+    @action(methods=['get',],detail=False)
     def check_telephone(self, request, *args, **kwargs):
         import re
         telephone = request.query_params.get('telephone')
