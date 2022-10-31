@@ -23,11 +23,16 @@ class UserSerializers(serializers.ModelSerializer):
         # 签发token
         token = self._get_token(user)
         # 放到context中,我在视图类中可以取出
+        # request = self.context['request']
+        # icon = 'http://%s%s%s' % (request.META['HTTP_HOST'], settings.MEDIA_URL, user.icon)
+        # self.context['icon'] = icon
+        # self.context['username'] = user.username
         self.context['token'] = token
         self.context['user'] = user
         return attrs
 
     def _get_user(self, attrs):
+        print(attrs)
         username = attrs.get('username')
         password = attrs.get('password')
         if re.match('^1[3-9][0-9]{9}$', username):
@@ -50,6 +55,16 @@ class UserSerializers(serializers.ModelSerializer):
         payload = jwt_payload_handler(user)  # 通过user对象获得payload
         token = jwt_encode_handler(payload)  # 通过payload获得token
         return token
+
+
+
+
+
+
+
+
+
+
 
 
 class CodeUserSerializers(serializers.ModelSerializer):
@@ -75,7 +90,7 @@ class CodeUserSerializers(serializers.ModelSerializer):
         cache_code = cache.get(settings.PHONE_CACHE_KEY % telephone)
         if code == cache_code:
             # 验证码通过
-            if re.match('^1[3-9][0-9]{9}$', telephone):
+            if re.match(r'^1[3-9][0-9]{9}$', telephone):
                 user = models.User.objects.filter(telephone=telephone).first()
                 if user:
                     # 把使用过的验证码删除

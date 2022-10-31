@@ -11,10 +11,11 @@ from . import models
 class LoginView(ViewSet):
     @action(methods=['POST'], detail=False)
     def login(self, request, *args, **kwargs):
-        ser = serializer.UserSerializers(data=request.data)
+        ser = serializer.UserSerializers(data=request.data, context={'request': request})
         if ser.is_valid():
             token = ser.context['token']
             # ser.context['user'] 是user对象
+
             username = ser.context['user'].username
 
             return APIResponse(token=token, username=username)
