@@ -31,6 +31,7 @@ INSTALLED_APPS = [
 
     'corsheaders',
     'rest_framework',
+    'django_filters',
     # xadmin主体模块
     'xadmin',
     # 渲染表格模块
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
 
     'user',  # 因为apps目录已经被加到环境变量了,所有直接能找到
     'home',
+    'course',
 ]
 
 MIDDLEWARE = [
@@ -47,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -225,3 +227,25 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
 
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES':{
+        'sms':'1/m'  # key要跟类中的scop对应
+    }
+}
+
+
+# django默认不支持redis做缓存
+# 缓存
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100}
+            # "PASSWORD": "123",
+        }
+    }
+}
+

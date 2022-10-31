@@ -15,7 +15,7 @@ def get_code():
 
 def send_messgage(phone, code):
     ssender = SmsSingleSender(settings.appid, settings.appkey)
-    params = [code, '3']  # 当模板没有参数时，`params = []`
+    params = [code, settings.expiration_time]  # 当模板没有参数时，`params = []`
     try:
         result = ssender.send_with_param(86, phone, settings.template_id, params, sign=settings.sms_sign, extend="",
                                          ext="")  # 签名参数不允许为空串
