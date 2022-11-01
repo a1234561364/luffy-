@@ -254,9 +254,9 @@ CACHES = {
 
 # 上线后必须换成公网地址
 # 后台基URL
-BASE_URL = 'http://127.0.0.1:8000'
+BASE_URL = 'http://123.57.64.206:8000'
 # 前台基URL
-LUFFY_URL = 'http://127.0.0.1:8080'
+LUFFY_URL = 'http://123.57.64.206'
 # 支付宝同步异步回调接口配置
 # 后台异步回调接口
 NOTIFY_URL = BASE_URL + "/order/success/"

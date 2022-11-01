@@ -68,7 +68,6 @@ class OrderSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         '''
         # 1）订单总价校验
-
         # 2）生成订单号
         # 3）支付用户：request.user
         # 4）支付链接生成
